@@ -1,6 +1,7 @@
 import User from "../Models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import { upsertStreamUser } from "../lib/stream.js";
 const signup = async (req,res)=>{
     const {email,password,fullName} = req.body;
     try{
@@ -40,7 +41,18 @@ const signup = async (req,res)=>{
             {expiresIn:"1d"}
         )
 
-        //TODO : also verify the user on stream
+       try {
+        await upsertStreamUser({
+            id:newUser._id.toString(),
+            name:newUser.fullName,
+            image:newUser.profilePic || " "
+        })
+        console.log(`Stream user created for ${newUser.fullName}`)
+        
+       } catch (error) {
+        console.log("Error in upsertStreamUser",error)
+        
+       }
          
 
         res.cookie("jwt", token, {
@@ -126,6 +138,55 @@ const logout = async (req,res)=>{
     })
 }
 
+const onboard = async(req,res)=>{
+    try{
+        const userId = req.user._id;
+        const {fullName,profilePic,bio,location,nativeLanguage,learningLanguage} = req.body;
+        
+        if(!fullName || !bio || !location || !nativeLanguage || !learningLanguage){
+            return res.status(400).json({
+                message: "All fields are required",
+                missingFields: [
+                    !fullName && "fullName",
+                    !bio && "bio",
+                    !nativeLanguage && "nativeLanguage",
+                    !learningLanguage && "learningLanguage",
+                    !location && "location",
+                ].filter(Boolean),
+            });
+        }
+        const updatedUser = await User.findByIdAndUpdate(userId, {
+            ...req.body,
+            isOnboarded: true,
+        }, { new: true });
+
+        if(!updatedUser){
+            return res.status(404).json({message:"User not found while onboarding"});
+        }
+        //Todo we want to update the user info in stream
+        try {
+            await upsertStreamUser({
+                id: updatedUser._id.toString(),
+                name: updatedUser.fullName,
+                image: updatedUser.profilePic || " "
+            });
+            console.log(`Stream user updated for ${updatedUser.fullName}`)
+        } catch (error) {
+            console.error("Error while upserting user to Stream:", error);
+            
+        }
+        
+        res.status(200).json({
+            success:true,
+            user:updatedUser
+        })
+    }
+    catch(error){
+        console.log("Error in onboard controller",error);
+    }
+}
 
 
-export {signup,login,logout}
+
+
+export {signup,login,logout,onboard}

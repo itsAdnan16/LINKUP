@@ -1,8 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./lib/db.js";
+import cookieParser from "cookie-parser";
 
+//Todo : import the user routes
 import authRoutes from "./routes/auth.route.js"
+import userRoutes from "./routes/user.route.js"
 dotenv.config();
 
 
@@ -11,10 +14,13 @@ const PORT = process.env.PORT || 5001;
 
 // Middleware should come before routes
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+
 
 // Basic error handling
 app.use((req, res) => {
