@@ -3,6 +3,7 @@ import FriendRequest from "../Models/FriendRequest.js"
 
 const getRecommendedUsers = async(req,res)=>{
     try{
+
         const currentUserId = req.user.id;
         const currentUser = req.user;
 
@@ -116,5 +117,48 @@ const acceptFriendRequest = async(req,res)=>{
         res.status(500).json({ message: "Internal Server Error" });
       }
 }
+const getFriendRequests = async(req,res)=>{
+    try {
+        const incomingRequests = await FriendRequest.find({
+            recipient: req.user.id,
+            status: "pending"
+        }).populate("sender","fullName profilePic nativeLanguage learningLanguage")
 
-export {getRecommendedUsers,getMyFriends,sendFriendRequest,acceptFriendRequest}
+        const outgoingRequests = await FriendRequest.find({
+            sender: req.user.id,
+            status:"accepted"
+        }).populate("recipient","fullName profilePic nativeLanguage learningLanguage")
+
+        return res.status(200).json(
+            {
+                incomingRequests,
+                outgoingRequests
+            }
+        )
+
+    } catch (error) {
+        console.log("Error in getFriendRequests controller",error);
+        res.status(500).json({message:"Internal Server Error"})
+    }
+}
+
+const getOutgoingFriendRequests = async(req,res)=>{
+    try {
+        const incomingReqs = await FriendRequest.find({
+          recipient: req.user.id,
+          status: "pending",
+        }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
+    
+        const acceptedReqs = await FriendRequest.find({
+          sender: req.user.id,
+          status: "accepted",
+        }).populate("recipient", "fullName profilePic");
+    
+        res.status(200).json({ incomingReqs, acceptedReqs });
+      } catch (error) {
+        console.log("Error in getPendingFriendRequests controller", error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+      }
+}
+
+export {getRecommendedUsers,getMyFriends,sendFriendRequest,acceptFriendRequest,getFriendRequests,getOutgoingFriendRequests}

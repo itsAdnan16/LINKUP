@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 //Todo : import the user routes
 import authRoutes from "./routes/auth.route.js"
 import userRoutes from "./routes/user.route.js"
+import chatRoutes from "./routes/chatRoutes.js"
 dotenv.config();
 
 
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/chat",chatRoutes)
 
 
 // Basic error handling
