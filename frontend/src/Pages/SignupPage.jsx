@@ -3,10 +3,13 @@ import { ShipWheelIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "../lib/axios";
+import { signup } from "../lib/api";
+import PageLoader from "../components/PageLoader";
 
 const SignUpPage = () => {
   const [signupData, setSignupData] = useState({
     fullName: "",
+    
     email: "",
     password: "",
   });
@@ -14,12 +17,9 @@ const SignUpPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { mutate: signupMutation, isPending, error } = useMutation({
-    mutationFn: async (data) => {
-      const response = await axiosInstance.post("/auth/signup", data);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+    mutationFn: signup,
+    onSuccess: (data) => {
+      console.log("Signup successful:", data);
       // Navigate to homepage after successful signup
       navigate("/");
     },
@@ -29,6 +29,7 @@ const SignUpPage = () => {
     e.preventDefault();
     signupMutation(signupData);
   };
+  if(isPending)return <PageLoader/>
 
   return (
     <div
