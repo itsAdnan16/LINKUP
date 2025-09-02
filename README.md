@@ -256,26 +256,6 @@ We welcome contributions! Please follow these steps:
 
 ---
 
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 **Author**
-
-<div align="center">
-
-**Adnan Hassan**
-
-[![GitHub](https://img.shields.io/badge/GitHub-itsAdnan16-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/itsAdnan16)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/your-profile)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-FF6B6B?style=for-the-badge&logo=portfolio&logoColor=white)](https://your-portfolio.com)
-
-</div>
-
----
-
 <div align="center">
 
 ### ⭐ **Star this repository if you found it helpful!**
